@@ -6,6 +6,64 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>キーボード練習アプリ</title>
     <meta name="description" content="TW-20V/TW-20H対応日本語入力練習システム" />
+    <style id="auth-styles">
+      #auth-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+      }
+      #auth-box {
+        background: white;
+        padding: 2rem;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        text-align: center;
+        max-width: 320px;
+        width: 90%;
+      }
+      #auth-box h2 {
+        margin: 0 0 1rem;
+        color: #333;
+      }
+      #auth-input {
+        width: 100%;
+        padding: 0.75rem;
+        border: 2px solid #ddd;
+        border-radius: 6px;
+        font-size: 1rem;
+        box-sizing: border-box;
+        margin-bottom: 1rem;
+      }
+      #auth-input:focus {
+        outline: none;
+        border-color: #4a90d9;
+      }
+      #auth-btn {
+        width: 100%;
+        padding: 0.75rem;
+        background: #4a90d9;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        font-size: 1rem;
+        cursor: pointer;
+      }
+      #auth-btn:hover {
+        background: #3a7bc8;
+      }
+      #auth-error {
+        color: #e74c3c;
+        margin-top: 0.5rem;
+        display: none;
+      }
+    </style>
     <script type="module" crossorigin src="/cool640db/assets/index-DnRu08mA.js"></script>
     <link rel="modulepreload" crossorigin href="/cool640db/assets/react-vendor-DJEePftr.js">
     <link rel="modulepreload" crossorigin href="/cool640db/assets/data-BPcDiSyE.js">
@@ -13,7 +71,6 @@
   </head>
   <body>
     <!-- GitHub Pages SPA redirect receiver -->
-    <!-- https://github.com/rafgraph/spa-github-pages -->
     <script>
       (function(l) {
         if (l.search[1] === '/') {
@@ -26,6 +83,48 @@
         }
       }(window.location))
     </script>
-    <div id="root"></div>
+    <div id="auth-overlay">
+      <div id="auth-box">
+        <h2>🔐 アクセス認証</h2>
+        <input type="password" id="auth-input" placeholder="パスワードを入力" autocomplete="off" />
+        <button id="auth-btn">認証</button>
+        <p id="auth-error">パスワードが違います</p>
+      </div>
+    </div>
+    <div id="root" style="display:none;"></div>
+    <script>
+      (function() {
+        const STORED_KEY = 'kb_auth_v1';
+
+        async function checkAuth(input) {
+          return input === 'onehandist';
+        }
+
+        function showApp() {
+          document.getElementById('auth-overlay').style.display = 'none';
+          document.getElementById('root').style.display = 'block';
+          document.getElementById('auth-styles').remove();
+          localStorage.setItem(STORED_KEY, Date.now().toString());
+        }
+
+        var stored = localStorage.getItem(STORED_KEY);
+        if (stored && (Date.now() - parseInt(stored)) < 7 * 24 * 60 * 60 * 1000) {
+          showApp();
+        } else {
+          document.getElementById('auth-btn').onclick = async function() {
+            var input = document.getElementById('auth-input').value;
+            if (await checkAuth(input)) {
+              showApp();
+            } else {
+              document.getElementById('auth-error').style.display = 'block';
+              document.getElementById('auth-input').value = '';
+            }
+          };
+          document.getElementById('auth-input').onkeypress = function(e) {
+            if (e.key === 'Enter') document.getElementById('auth-btn').click();
+          };
+        }
+      })();
+    </script>
   </body>
 </html>
