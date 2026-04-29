@@ -1,0 +1,1 @@
+import{j as t}from"./react-vendor-Cud9dV9Y.js";import{G as r}from"./GenericEntryPoint-Cu2dScPi.js";import"./index-1n22qUUe.js";import"./data-CrZDOOhi.js";import"./PracticeHeaderView-B-rU-gzr.js";const p=()=>t.jsx(r,{model:"tw-20h"});export{p as default};
